@@ -19,7 +19,6 @@ var options = {
   }
 };
 var pgp = require('pg-promise')(options);
-//postgres://postgres:postgres@localhost:5432/Senati_
 var connectionString = 'postgres://slgnwcrm:0RKep0AzTuANmW2nKXAF60jcC3hbtEWu@raja.db.elephantsql.com:5432/slgnwcrm';
 var db = pgp(connectionString);
 db.connect()
@@ -85,11 +84,38 @@ async function Pivot_Datos (req, res, next){
     output
   });
 }
+async function Datosxnombre(req,res,next){
+  let dato = req.body.nombre ;
+  db.any('select nombre_tipo , sum(case when personas.id_persona=personas.id_persona then 1 else 0 end ) from tipos  '+
+  ' inner join personas on personas.tipo=tipos.id_tipo inner join paises on paises.id_pais=personas.id_pais  WHERE paises.nombre = $1 group by nombre_tipo ', [dato])
+.then(function(data) {
+res.status(200).json({
+ data
+});
+})
+.catch(function(error) {
+ // error;
+});
+}
+async function paises(req,res,next){
+  let dato = req.body.nombre ;
+  db.any('select * from paises ')
+.then(function(data) {
+res.status(200).json({
+ data
+});
+})
+.catch(function(error) {
+ // error;
+});
+}
 // exportar modules
 module.exports = {
   Datos: Datos,
   Datosxid  : Datosxid ,
-  Pivot_Datos : Pivot_Datos 
+  Pivot_Datos : Pivot_Datos ,
+  Datosxnombre : Datosxnombre ,
+  paises : paises
 };
 
 
